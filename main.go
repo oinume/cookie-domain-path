@@ -9,6 +9,7 @@ import (
 
 var (
 	domain = flag.String("domain", "", "domain")
+	port   = flag.Int("port", 8080, "port")
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/cookie/set", setCookie)
 	mux.HandleFunc("/cookie/get", getCookie)
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", *port), mux); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -33,7 +34,7 @@ func setCookie(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, cookie)
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "setCookie ok")
+	fmt.Fprintf(w, "setCookie ok. target domain is %s", *domain)
 }
 
 func getCookie(w http.ResponseWriter, r *http.Request) {
